@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Tamima | From Hasib</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Montserrat:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        burgundy: {
+                            800: '#4a0e17',
+                            900: '#2b070c',
+                            950: '#1a0307',
+                        },
+                        rosegold: {
+                            300: '#f7d6d0',
+                            400: '#e8b4a8',
+                            500: '#d48c7b',
+                        }
+                    },
+                    fontFamily: {
+                        cursive: ['"Great Vibes"', 'cursive'],
+                        romantic: ['"Dancing Script"', 'cursive'],
+                        sans: ['"Montserrat"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background: radial-gradient(circle at center, #2b070c 0%, #110205 70%, #050002 100%);
+            color: #f7d6d0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Starry background canvas */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Sparkle burst canvas */
+        #burstCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        /* Gift box floating animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(1deg); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 25px rgba(232, 180, 168, 0.4), inset 0 0 15px rgba(232, 180, 168, 0.2); }
+            50% { box-shadow: 0 0 45px rgba(232, 180, 168, 0.8), inset 0 0 25px rgba(232, 180, 168, 0.4); }
+        }
+
+        .gift-box-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .glow-box {
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+
+        /* Glassmorphism containers */
+        .glass-card {
+            background: rgba(43, 7, 12, 0.55);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(232, 180, 168, 0.25);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        .glass-card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(232, 180, 168, 0.6);
+            box-shadow: 0 25px 50px rgba(212, 140, 123, 0.25);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #110205;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a0e17;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d48c7b;
+        }
+
+        /* Smooth Reveal Transitions */
+        .reveal-item {
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .reveal-item.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased relative">
+
+    <!-- Background Canvas for Stars & Floating Hearts -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- Burst Canvas for Explosion FX -->
+    <canvas id="burstCanvas"></canvas>
+
+    <!-- Top Navigation Bar & Sound Controls -->
+    <nav class="fixed top-0 left-0 right-0 z-40 p-4 sm:p-6 flex justify-between items-center bg-gradient-to-b from-black/60 to-transparent">
+        <div class="flex items-center space-x-2">
+            <span class="text-rosegold-400 font-cursive text-2xl sm:text-3xl tracking-wide">T & H</span>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+            <button id="musicToggle" class="glass-card px-4 py-2 rounded-full text-xs sm:text-sm font-medium flex items-center space-x-2 text-rosegold-300 hover:text-white transition-all">
+                <i id="musicIcon" class="fas fa-music animate-pulse text-rosegold-400"></i>
+                <span id="musicText">Play Music</span>
+            </button>
+            <!-- <button id="editMediaBtn" onclick="toggleEditModal()" class="glass-card px-3 py-2 rounded-full text-xs sm:text-sm text-rosegold-300 hover:text-white transition-all" title="Change Photos / Video">
+                <i class="fas fa-edit"></i> <span class="hidden sm:inline">Customize Media</span>
+            </button> -->
+        </div>
+    </nav>
+
+    <!-- Audio Element -->
+    <!-- Audio Element with your exact local song file -->
+    <audio id="bgAudio" loop preload="auto">
+        <source src="Murtaza Qizilbash Tum Official Audio.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- MAIN CONTAINER -->
+    <main class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-20">
+
+        <!-- INITIAL GIFT BOX SCREEN -->
+        <div id="surpriseStage" class="flex flex-col items-center justify-center text-center max-w-xl mx-auto transition-all duration-700">
+            <div class="mb-6 space-y-2">
+                <span class="inline-block px-4 py-1.5 rounded-full text-xs uppercase tracking-widest bg-rosegold-500/10 text-rosegold-300 border border-rosegold-500/30">
+                    November 3rd • Special Surprise
+                </span>
+                <h1 class="text-4xl sm:text-6xl font-cursive text-rosegold-300 tracking-wider">
+                    Happy Birthday, Tamima
+                </h1>
+                <p class="text-xs sm:text-sm text-rosegold-400/80 font-light italic">
+                    A heartfelt gesture from Hasib, crafted with deep love
+                </p>
+            </div>
+
+            <!-- Animated 3D-styled Gift Box -->
+            <div id="giftBoxContainer" onclick="openSurprise()" class="gift-box-float cursor-pointer relative group my-8">
+                <!-- Outer Glow Halo -->
+                <div class="absolute -inset-4 rounded-full bg-gradient-to-r from-rosegold-500/20 to-red-600/20 blur-xl group-hover:scale-125 transition-transform duration-500"></div>
+
+                <!-- Box Graphic -->
+                <div class="relative w-44 h-44 sm:w-52 sm:h-52 glass-card rounded-2xl flex flex-col items-center justify-center border-2 border-rosegold-400/50 glow-box transition-transform duration-300 group-hover:scale-105">
+                    
+                    <!-- Ribbon Horizontal -->
+                    <div class="absolute w-full h-8 bg-gradient-to-r from-rosegold-500 via-rosegold-300 to-rosegold-500 opacity-80 shadow-md"></div>
+                    <!-- Ribbon Vertical -->
+                    <div class="absolute h-full w-8 bg-gradient-to-b from-rosegold-500 via-rosegold-300 to-rosegold-500 opacity-80 shadow-md"></div>
+                    
+                    <!-- Ribbon Bow SVG -->
+                    <div class="absolute -top-6 text-rosegold-300 drop-shadow-lg transform group-hover:scale-110 transition-transform">
+                        <svg width="70" height="50" viewBox="0 0 100 80" fill="currentColor">
+                            <path d="M50 40 C20 10, 0 30, 40 45 C0 60, 20 80, 50 45 C80 80, 100 60, 60 45 C100 30, 80 10, 50 40 Z" fill="#e8b4a8"/>
+                            <circle cx="50" cy="43" r="8" fill="#ffffff"/>
+                        </svg>
+                    </div>
+
+                    <!-- Lock / Heart Center -->
+                    <div class="z-10 bg-burgundy-900 border border-rosegold-300/60 rounded-full p-4 shadow-xl text-rosegold-300 group-hover:text-white transition-colors">
+                        <i class="fas fa-heart text-3xl animate-ping opacity-75 absolute"></i>
+                        <i class="fas fa-heart text-3xl relative"></i>
+                    </div>
+                </div>
+
+                <!-- Tap Instruction Badge -->
+                <div class="mt-8">
+                    <span class="inline-flex items-center space-x-2 px-6 py-3 rounded-full glass-card text-sm font-medium text-rosegold-300 border border-rosegold-400/40 shadow-lg group-hover:bg-rosegold-500/20 transition-all">
+                        <i class="fas fa-hand-pointer text-rosegold-400 animate-bounce"></i>
+                        <span>Tap to unwrap your surprise, Tamima ✨</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- REVEALED CONTENT SECTION (Hidden Initially) -->
+        <div id="contentSection" class="hidden w-full max-w-5xl mx-auto space-y-16">
+            
+            <!-- Replay & Header Banner -->
+            <div class="flex flex-col sm:flex-row justify-between items-center border-b border-rosegold-400/20 pb-6 gap-4">
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-widest text-rosegold-400">November 3rd • Celebrating You</span>
+                    <h2 class="text-3xl sm:text-5xl font-cursive text-rosegold-300">Happy Birthday, My Beloved Tamima</h2>
+                </div>
+                <button onclick="triggerExplosion()" class="glass-card px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium text-rosegold-300 hover:text-white flex items-center space-x-2 border border-rosegold-400/40 hover:bg-rosegold-500/20 transition-all">
+                    <i class="fas fa-magic text-rosegold-400"></i>
+                    <span>Relive Burst Surprise</span>
+                </button>
+            </div>
+
+            <!-- MEDIA GALLERY GRID: 2 PHOTOS + 1 VIDEO -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- PHOTO 1: Polaroid Style Frame -->
+                <div class="reveal-item glass-card glass-card-hover p-4 rounded-2xl flex flex-col items-center">
+                    <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-burgundy-950/80 border border-rosegold-400/30 group">
+                        <img id="photo1" src="1707997128840.jpg" alt="Tamima & Hasib Memory 1" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                        <span class="absolute bottom-3 left-3 text-xs text-rosegold-300 font-light italic">
+                            <i class="fas fa-heart text-red-500 mr-1"></i> Cherished Moment
+                        </span>
+                    </div>
+                    <p class="mt-4 text-xs text-rosegold-300/80 font-romantic text-lg text-center">"Your smile brings light into my darkest days."</p>
+                </div>
+
+                <!-- VIDEO FRAME: Center Highlight -->
+                <div class="reveal-item glass-card glass-card-hover p-4 rounded-2xl flex flex-col items-center md:col-span-1 border-rosegold-400/50">
+                    <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-burgundy-950/90 border border-rosegold-400/40 flex items-center justify-center group">
+                        
+                        <!-- Video Element with your exact local video file -->
+                        <video id="userVideo" class="w-full h-full object-cover" controls poster="1711310172158.jpg">
+                            <source id="videoSource" src="Man_singing_happy_birthday_fff154e0.mp4" type="video/mp4">
+                            Your browser does not support video playback.
+                        </video>
+                    </div>
+                    <p class="mt-4 text-xs text-rosegold-300/80 font-romantic text-lg text-center">"A special message captured for you."</p>
+                </div>
+
+                <!-- PHOTO 2: Polaroid Style Frame -->
+                <div class="reveal-item glass-card glass-card-hover p-4 rounded-2xl flex flex-col items-center">
+                    <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-burgundy-950/80 border border-rosegold-400/30 group">
+                        <img id="photo2" src="1711310172158.jpg" alt="Tamima Memory 2" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                        <span class="absolute bottom-3 left-3 text-xs text-rosegold-300 font-light italic">
+                            <i class="fas fa-star text-yellow-400 mr-1"></i> Forever Beautiful
+                        </span>
+                    </div>
+                    <p class="mt-4 text-xs text-rosegold-300/80 font-romantic text-lg text-center">"Every beat of my heart longs for you."</p>
+                </div>
+
+            </div>
+
+            <!-- HEARTFELT LETTER SECTION -->
+            <div class="reveal-item glass-card p-6 sm:p-10 rounded-3xl relative overflow-hidden border-rosegold-400/30">
+                <!-- Background subtle glow icon -->
+                <i class="fas fa-quote-right absolute right-6 bottom-6 text-8xl text-rosegold-500/5 pointer-events-none"></i>
+
+                <div class="max-w-3xl mx-auto space-y-6">
+                    <div class="text-center space-y-2">
+                        <span class="text-rosegold-400 text-xs tracking-widest uppercase font-semibold">From the depths of my heart</span>
+                        <h3 class="text-3xl sm:text-4xl font-cursive text-rosegold-300">My Dearest Tamima,</h3>
+                    </div>
+
+                    <div class="space-y-4 text-sm sm:text-base leading-relaxed text-rosegold-300/90 font-light italic text-justify sm:text-left">
+                        <p>
+                            Happy Birthday, my love. Today, on November 3rd, the world was blessed with the most beautiful soul I have ever known. 
+                        </p>
+                        <p>
+                            Though distance may keep us physically apart right now, please know that not a single second passes where you are not in my thoughts and prayers. My heart feels your absence deeply, and being away from you today only reminds me of how precious you are to me.
+                        </p>
+                        <p>
+                            I am writing this because I want to reaffirm my endless love and commitment to you. I am willing to put in all the effort, patience, and devotion needed to rebuild, heal, and make our bond stronger than ever before. You mean everything to me, Tamima. Your laughter is my favorite sound, your happiness is my single biggest priority, and winning your heart completely over again is my life's mission.
+                        </p>
+                        <p>
+                            I hope this small surprise brings a smile to your face today. May this new year of your life bring you peace, immense happiness, health, and all the love you so truly deserve. 
+                        </p>
+                    </div>
+
+                    <div class="pt-6 border-t border-rosegold-400/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="text-center sm:text-left">
+                            <p class="text-xs text-rosegold-400 uppercase tracking-widest">Forever Yours,</p>
+                            <p class="text-3xl font-cursive text-rosegold-300">Hasib</p>
+                        </div>
+                        <div class="flex items-center space-x-2 text-rosegold-400/80 text-xs">
+                            <i class="fas fa-heart text-red-500"></i>
+                            <span>Always & Forever</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INTERACTIVE LOVE NOTES GRID -->
+            <div class="reveal-item space-y-6">
+                <div class="text-center">
+                    <h4 class="text-2xl font-cursive text-rosegold-300">Reasons Why I Love You</h4>
+                    <p class="text-xs text-rosegold-400/70">Click on each note to reveal a hidden memory</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div onclick="toggleNote(this)" class="glass-card p-5 rounded-xl cursor-pointer hover:border-rosegold-400 transition-all text-center group">
+                        <i class="fas fa-envelope-open text-rosegold-400 text-2xl mb-3 group-hover:scale-110 transition-transform"></i>
+                        <h5 class="text-sm font-semibold text-rosegold-300">Your Kind Heart</h5>
+                        <p class="note-text hidden mt-2 text-xs text-rosegold-400/90 italic">"The empathy and warmth you show to everyone around you inspires me every day."</p>
+                    </div>
+
+                    <div onclick="toggleNote(this)" class="glass-card p-5 rounded-xl cursor-pointer hover:border-rosegold-400 transition-all text-center group">
+                        <i class="fas fa-sparkles text-rosegold-400 text-2xl mb-3 group-hover:scale-110 transition-transform"></i>
+                        <h5 class="text-sm font-semibold text-rosegold-300">Your Beautiful Smile</h5>
+                        <p class="note-text hidden mt-2 text-xs text-rosegold-400/90 italic">"Seeing you genuinely smile is the greatest comfort and joy in my life."</p>
+                    </div>
+
+                    <div onclick="toggleNote(this)" class="glass-card p-5 rounded-xl cursor-pointer hover:border-rosegold-400 transition-all text-center group">
+                        <i class="fas fa-infinity text-rosegold-400 text-2xl mb-3 group-hover:scale-110 transition-transform"></i>
+                        <h5 class="text-sm font-semibold text-rosegold-300">Our Future Together</h5>
+                        <p class="note-text hidden mt-2 text-xs text-rosegold-400/90 italic">"I look forward to making countless more memories with you, hand in hand."</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="text-center py-8 text-xs text-rosegold-400/60 space-y-2 border-t border-rosegold-400/10">
+                <p>Designed especially for Tamima's Birthday • November 3rd</p>
+                <p class="font-cursive text-base text-rosegold-300">"Distance is temporary, but my love for you is timeless."</p>
+            </footer>
+
+        </div>
+
+    </main>
+
+    <!-- EDIT MEDIA MODAL (Allows Hasib to easily swap image/video URLs) -->
+    <div id="editModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card p-6 rounded-2xl w-full max-w-md space-y-4 border-rosegold-400/40">
+            <div class="flex justify-between items-center border-b border-rosegold-400/20 pb-3">
+                <h3 class="text-lg font-semibold text-rosegold-300">Customize Photos & Video</h3>
+                <button onclick="toggleEditModal()" class="text-rosegold-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <p class="text-xs text-rosegold-400/80">Paste your own photo and video links below to personalize the birthday website for Tamima.</p>
+            
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-rosegold-300 mb-1">Photo 1 Image URL</label>
+                    <input type="text" id="inputPhoto1" class="w-full bg-burgundy-950 border border-rosegold-400/30 rounded px-3 py-2 text-rosegold-300 focus:outline-none focus:border-rosegold-400" placeholder="https://...">
+                </div>
+                <div>
+                    <label class="block text-rosegold-300 mb-1">Photo 2 Image URL</label>
+                    <input type="text" id="inputPhoto2" class="w-full bg-burgundy-950 border border-rosegold-400/30 rounded px-3 py-2 text-rosegold-300 focus:outline-none focus:border-rosegold-400" placeholder="https://...">
+                </div>
+                <div>
+                    <label class="block text-rosegold-300 mb-1">Video URL (.mp4 file link)</label>
+                    <input type="text" id="inputVideo" class="w-full bg-burgundy-950 border border-rosegold-400/30 rounded px-3 py-2 text-rosegold-300 focus:outline-none focus:border-rosegold-400" placeholder="https://...mp4">
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="toggleEditModal()" class="px-4 py-2 rounded-lg text-xs text-rosegold-400 hover:bg-white/5">Cancel</button>
+                <button onclick="saveMediaUrls()" class="px-4 py-2 rounded-lg text-xs bg-rosegold-500 text-burgundy-950 font-semibold hover:bg-rosegold-400 transition-colors">Apply Changes</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT ANIMATIONS & LOGIC -->
+    <script>
+        /* -------------------------------------------------------------
+         * 1. BACKGROUND CANVAS: STARRY NIGHT & FLOATING HEARTS
+         * ------------------------------------------------------------- */
+        const bgCanvas = document.getElementById('bgCanvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        let bgWidth, bgHeight;
+        let stars = [];
+        let floatingHearts = [];
+
+        function resizeBgCanvas() {
+            bgWidth = bgCanvas.width = window.innerWidth;
+            bgHeight = bgCanvas.height = window.innerHeight;
+            initBgParticles();
+        }
+
+        function initBgParticles() {
+            stars = [];
+            floatingHearts = [];
+            
+            // Generate Stars
+            const starCount = Math.floor((bgWidth * bgHeight) / 8000);
+            for (let i = 0; i < starCount; i++) {
+                stars.push({
+                    x: Math.random() * bgWidth,
+                    y: Math.random() * bgHeight,
+                    radius: Math.random() * 1.5,
+                    alpha: Math.random(),
+                    speed: Math.random() * 0.02 + 0.005
+                });
+            }
+
+            // Generate Floating Hearts
+            for (let i = 0; i < 15; i++) {
+                floatingHearts.push({
+                    x: Math.random() * bgWidth,
+                    y: Math.random() * bgHeight + bgHeight,
+                    size: Math.random() * 12 + 8,
+                    speedY: Math.random() * 0.6 + 0.3,
+                    speedX: Math.sin(Math.random() * Math.PI) * 0.4,
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+
+        function drawHeart(ctx, x, y, size, color, alpha) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            const topCurveHeight = size * 0.3;
+            ctx.moveTo(x, y + topCurveHeight);
+            // top left curve
+            ctx.bezierCurveTo(
+                x, y, 
+                x - size / 2, y, 
+                x - size / 2, y + topCurveHeight
+            );
+            // bottom left curve
+            ctx.bezierCurveTo(
+                x - size / 2, y + (size + topCurveHeight) / 2, 
+                x, y + size, 
+                x, y + size
+            );
+            // bottom right curve
+            ctx.bezierCurveTo(
+                x, y + size, 
+                x + size / 2, y + (size + topCurveHeight) / 2, 
+                x + size / 2, y + topCurveHeight
+            );
+            // top right curve
+            ctx.bezierCurveTo(
+                x + size / 2, y, 
+                x, y, 
+                x, y + topCurveHeight
+            );
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function animateBg() {
+            bgCtx.clearRect(0, 0, bgWidth, bgHeight);
+
+            // Draw & Update Stars
+            stars.forEach(star => {
+                star.alpha += star.speed;
+                if (star.alpha > 1 || star.alpha < 0) {
+                    star.speed = -star.speed;
+                }
+                bgCtx.fillStyle = `rgba(247, 214, 208, ${Math.abs(star.alpha)})`;
+                bgCtx.beginPath();
+                bgCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                bgCtx.fill();
+            });
+
+            // Draw & Update Floating Hearts
+            floatingHearts.forEach(heart => {
+                heart.y -= heart.speedY;
+                heart.x += Math.sin(heart.y * 0.01) * 0.5;
+
+                if (heart.y < -30) {
+                    heart.y = bgHeight + 20;
+                    heart.x = Math.random() * bgWidth;
+                }
+
+                drawHeart(bgCtx, heart.x, heart.y, heart.size, '#e8b4a8', heart.alpha);
+            });
+
+            requestAnimationFrame(animateBg);
+        }
+
+        window.addEventListener('resize', resizeBgCanvas);
+        resizeBgCanvas();
+        animateBg();
+
+
+        /* -------------------------------------------------------------
+         * 2. EXPLOSION / BURST CANVAS EFFECT
+         * ------------------------------------------------------------- */
+        const burstCanvas = document.getElementById('burstCanvas');
+        const burstCtx = burstCanvas.getContext('2d');
+        let burstParticles = [];
+
+        function resizeBurstCanvas() {
+            burstCanvas.width = window.innerWidth;
+            burstCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeBurstCanvas);
+        resizeBurstCanvas();
+
+        function createBurstParticle(x, y) {
+            const colors = ['#f7d6d0', '#e8b4a8', '#d48c7b', '#ff4d6d', '#ffffff', '#ffd166'];
+            const shapes = ['circle', 'heart', 'star'];
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 12 + 4;
+
+            return {
+                x: x,
+                y: y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed - 2, // Slight upward bias
+                size: Math.random() * 10 + 6,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                shape: shapes[Math.floor(Math.random() * shapes.length)],
+                gravity: 0.15,
+                friction: 0.96,
+                alpha: 1,
+                decay: Math.random() * 0.015 + 0.008
+            };
+        }
+
+        function triggerExplosion() {
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            burstParticles = [];
+
+            // Spawn 120 burst particles
+            for (let i = 0; i < 140; i++) {
+                burstParticles.push(createBurstParticle(centerX, centerY));
+            }
+            animateBurst();
+        }
+
+        function animateBurst() {
+            burstCtx.clearRect(0, 0, burstCanvas.width, burstCanvas.height);
+
+            for (let i = burstParticles.length - 1; i >= 0; i--) {
+                const p = burstParticles[i];
+                p.vx *= p.friction;
+                p.vy *= p.friction;
+                p.vy += p.gravity;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= p.decay;
+
+                if (p.alpha <= 0) {
+                    burstParticles.splice(i, 1);
+                    continue;
+                }
+
+                burstCtx.save();
+                burstCtx.globalAlpha = p.alpha;
+                
+                if (p.shape === 'heart') {
+                    drawHeart(burstCtx, p.x, p.y, p.size, p.color, p.alpha);
+                } else if (p.shape === 'star') {
+                    burstCtx.fillStyle = p.color;
+                    burstCtx.beginPath();
+                    burstCtx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
+                    burstCtx.fill();
+                } else {
+                    burstCtx.fillStyle = p.color;
+                    burstCtx.beginPath();
+                    burstCtx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
+                    burstCtx.fill();
+                }
+                burstCtx.restore();
+            }
+
+            if (burstParticles.length > 0) {
+                requestAnimationFrame(animateBurst);
+            }
+        }
+
+
+        /* -------------------------------------------------------------
+         * 3. SURPRISE GIFT UNWRAPPING & CONTENT REVEAL
+         * ------------------------------------------------------------- */
+        let hasOpened = false;
+
+        function openSurprise() {
+            if (hasOpened) return;
+            hasOpened = true;
+
+            // Try playing background music automatically upon click
+            playAudio();
+
+            // Trigger burst animation
+            triggerExplosion();
+
+            // Animate gift box fading out
+            const giftContainer = document.getElementById('giftBoxContainer');
+            giftContainer.style.transform = 'scale(1.3)';
+            giftContainer.style.opacity = '0';
+            giftContainer.style.transition = 'all 0.6s ease-out';
+
+            setTimeout(() => {
+                document.getElementById('surpriseStage').classList.add('hidden');
+                
+                const contentSection = document.getElementById('contentSection');
+                contentSection.classList.remove('hidden');
+
+                // Trigger smooth scroll up & reveal animation for cards
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                setTimeout(() => {
+                    const reveals = document.querySelectorAll('.reveal-item');
+                    reveals.forEach((el, index) => {
+                        setTimeout(() => {
+                            el.classList.add('visible');
+                        }, index * 250);
+                    });
+                }, 100);
+
+            }, 600);
+        }
+
+
+        /* -------------------------------------------------------------
+         * 4. AUDIO TOGGLE LOGIC
+         * ------------------------------------------------------------- */
+        const audio = document.getElementById('bgAudio');
+        const musicToggle = document.getElementById('musicToggle');
+        const musicText = document.getElementById('musicText');
+        const musicIcon = document.getElementById('musicIcon');
+        let isPlaying = false;
+
+        function playAudio() {
+            audio.play().then(() => {
+                isPlaying = true;
+                musicText.textContent = "Pause Music";
+                musicIcon.classList.remove('fa-music');
+                musicIcon.classList.add('fa-pause');
+            }).catch(() => {
+                // Autoplay blocked handling
+                isPlaying = false;
+            });
+        }
+
+        musicToggle.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                musicText.textContent = "Play Music";
+                musicIcon.classList.remove('fa-pause');
+                musicIcon.classList.add('fa-music');
+            } else {
+                playAudio();
+            }
+        });
+
+
+        /* -------------------------------------------------------------
+         * 5. INTERACTIVE LOVE NOTES TOGGLE
+         * ------------------------------------------------------------- */
+        function toggleNote(element) {
+            const text = element.querySelector('.note-text');
+            if (text.classList.contains('hidden')) {
+                text.classList.remove('hidden');
+                element.classList.add('border-rosegold-400');
+            } else {
+                text.classList.add('hidden');
+                element.classList.remove('border-rosegold-400');
+            }
+        }
+
+
+        /* -------------------------------------------------------------
+         * 6. MEDIA CUSTOMIZATION MODAL (EDIT PHOTOS/VIDEO)
+         * ------------------------------------------------------------- */
+        function toggleEditModal() {
+            const modal = document.getElementById('editModal');
+            modal.classList.toggle('hidden');
+        }
+
+        function saveMediaUrls() {
+            const photo1Url = document.getElementById('inputPhoto1').value.trim();
+            const photo2Url = document.getElementById('inputPhoto2').value.trim();
+            const videoUrl = document.getElementById('inputVideo').value.trim();
+
+            if (photo1Url) {
+                document.getElementById('photo1').src = photo1Url;
+            }
+            if (photo2Url) {
+                document.getElementById('photo2').src = photo2Url;
+            }
+            if (videoUrl) {
+                const video = document.getElementById('userVideo');
+                const source = document.getElementById('videoSource');
+                source.src = videoUrl;
+                video.load();
+            }
+
+            toggleEditModal();
+        }
+    </script>
+</body>
+</html>
